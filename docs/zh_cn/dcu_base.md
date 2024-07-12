@@ -289,7 +289,7 @@ VMFault问题和CPU程序的CoreDump类似，分析难度较大，可以参考�
 
 备注：如果多台配置一样，填写一份即可，如果存在差异可以备注或者不同配置填写不同表格        
 
-![](imgs/get_information.png)
+![](imgs/get_informations.png)
 
 
 
