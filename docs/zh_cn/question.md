@@ -9,9 +9,9 @@
 | Z100L       | 设备中同时存在K100与Z100L情况下安装最新驱动显示安装成功，重启后lsmod  \| grep hydcu无信息 | 以centos  7.6为例，将ko文件复制到/lib/modules对应路径下：     cp -r /opt/hyhal/dkms/*  /lib/modules/3.10.0-957.el7.x86_64/updates/dkms/     然后重新加载hydcu：modprobe hydcu |
 | Z100L       | gemm性能只有标称算力一半                                     | 升级DCU驱动为rock-4.5.2-5.11.40-V01.8.1.run                  |
 | K100_AI     | X640  G50+8卡K100_AI机型安装驱动提示"Local GCC version 80301 does not match kernel  compiler GCC version 80201"，目前驱动安装失败。 | 研发修改编译失败的代码重新发布rock-kernel-refactory-rock-5.7.1-6.2.17-V1.1.1.aio.run驱动，重新按照驱动即可。 |
-| \           | k8s集群环境，rocm-smi命令报错，在集群环境下，重装驱动无效，把集群reset后重装驱动可以正常使用。机器断电重启后再次出现error:Open  mkfd failed | 通过k8s-dcu-plugin.yaml，dcu-exporter.yaml，关闭相应插件，卸载驱动，在重装驱动，节点重启，可以解决。 |
-| \           | OpenEuler22.03系统安装完驱动，lsmod  \| grep hydcu和hy-smi可查看到显卡信息，但是rocminfo会报Open kfd failed at Load | 升级驱动rock5.7  重启解决                                    |
-| \           | Ubuntu20.04，初始内核版本  5.4.0-42，安装 DCU 驱动重启后，驱动无法正常加载； | 设置初始内核版本为默认启动项，重启后重新安装驱动并锁核       |
+| /           | k8s集群环境，rocm-smi命令报错，在集群环境下，重装驱动无效，把集群reset后重装驱动可以正常使用。机器断电重启后再次出现error:Open  mkfd failed | 通过k8s-dcu-plugin.yaml，dcu-exporter.yaml，关闭相应插件，卸载驱动，在重装驱动，节点重启，可以解决。 |
+| /           | OpenEuler22.03系统安装完驱动，lsmod  \| grep hydcu和hy-smi可查看到显卡信息，但是rocminfo会报Open kfd failed at Load | 升级驱动rock5.7  重启解决                                    |
+| /           | Ubuntu20.04，初始内核版本  5.4.0-42，安装 DCU 驱动重启后，驱动无法正常加载； | 设置初始内核版本为默认启动项，重启后重新安装驱动并锁核       |
 | Z100L       | 跑llama_tencentpretrain_pytorch训练报错                      | 客户机是z100sm  dtk23.10跑不了，改成安装dtk23.04，以及对应的torch torchvision deepspeed，解决了这个问题 |
 
 ### DTK类
