@@ -2,17 +2,15 @@
 ====================================
 
 
-.. _搭建基础环境:
 .. toctree::
    :maxdepth: 2
-   :caption: DCU问题分析指导手册-基础版
+   :caption: DCU问题分析指南
 
    dcu_base.md
 
-.. _基于Docker使用DCU:
 .. toctree::
    :maxdepth: 2
-   :caption: 问题示例汇总
+   :caption: 参考示例汇总
 
    question.md
 
