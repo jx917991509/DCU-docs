@@ -47,13 +47,13 @@ lspci -vv -d :55b7 | grep node
 
 查询方法：a）查看主板贴纸；b）ipmitool fru查看Board Serial。
 
-![](C:\Users\Admin\Desktop\个人文件\sn码.png)
+![](imgs/sn.png)
 
 ​    (2)   电源连线部件的选择：X7840和X 7340机型，各GPU卡电源线可查询链接获取准确信息https://edoc.sugon.com/default/++intid++847659209/@zopen.views%3Aindex。
 
 ​    (3)   Riser：选择符合要求的riser，避免降速或散热等问题，详细可以参考服务器规范，例如X7340
 
-![](C:\Users\Admin\Desktop\个人文件\x7340.png)
+![](imgs/x7340.png)
 
 3、NC服务器配置MMIO HighBase
 
