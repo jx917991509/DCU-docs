@@ -8,24 +8,22 @@
 
 在进一步分析问题或者优化性能前，请先完成基本信息收集和确认，包括但不限于如下内容：
 
+```
 1. 服务器型号（包括主板序列号）、BMC&BIOS版本和BIOS配置。
 2. 服务器基本配置，包括CPU型号和数量、内存数量和总容量（使用插槽位置）、拓扑类型（均衡、通用）、网卡型号数量和网络拓扑（集群环境尤其需要关注）、磁盘配置。
 3. 操作系统版本和grub配置的启动参数。
 4. DCU卡型号和数量，插槽位置，安装的驱动版本和vbios版本。
 5. 了解使用的DTK版本、学习框架版本、Python版本。务必确认需要适配DCU的软件使用了正确版本，没有安装错误或者被意外覆盖。
 6. 如果使用docker，了解清楚镜像来源，确认创建容器的参数；如果使用K8S，了解清楚K8S版本及DCU相关配置和包的版本（plugin等）
+```
 
 可参考附录信息表格。
 
 
 
- 
-
 ## 2   服务器
 
 ### 2.1      兼容列表
-
-
 
 请根据最新产品资料，确认服务器和DCU经过认证测试，并关注BMC、BIOS等版本要求（部分可能需要关注CPLD版本）。
 
@@ -35,7 +33,9 @@
 
 ​    (1)   对Hygon服务器，常规建议是训练选择通用拓扑，推理选择均衡拓扑。参考查看方法（以Z100L为例，对应id为55b7）
 
+```
 lspci -vv -d :55b7 | grep node
+```
 
 如果显示的node是在同一个socket（0-3，4-7）上表示通用拓扑，如果不在一个socket上则是均衡拓扑。
 
@@ -43,35 +43,39 @@ lspci -vv -d :55b7 | grep node
 
 2、配套部件符合规范要求
 
-​    (1)   主板的选择，对K100/H800等峰值电流超过50A的GPU卡，使用65MA32C01主板的服务器（即X7840H0、X7840A0），如果主板料号为24002985、24002984且ECN为AS版（即SN为24002985ASxxxxxx或24002984ASxxxxxx），需要更换ECN版本大于等于BH的65MA32C01主板。
+​    (1)   主板的选择，对K100/H800等峰值电流超过50A的GPU卡，使用65MA32C01主板的服务器（即X7840H0、X7840A0），如果主板料号为24002985、24002984且ECN为AS版（即SN为24002985ASxxxxxx或24002984AS xxxxxx），需要更换ECN版本大于等于BH的65MA32C01主板。
 
 查询方法：a）查看主板贴纸；b）ipmitool fru查看Board Serial。
 
-![](imgs/sn.png)
+![](C:\Users\Admin\Desktop\个人文件\sn码.png)
 
 ​    (2)   电源连线部件的选择：X7840和X 7340机型，各GPU卡电源线可查询链接获取准确信息https://edoc.sugon.com/default/++intid++847659209/@zopen.views%3Aindex。
 
 ​    (3)   Riser：选择符合要求的riser，避免降速或散热等问题，详细可以参考服务器规范，例如X7340
 
-![](imgs/x7340.png)
+![](C:\Users\Admin\Desktop\个人文件\x7340.png)
 
 3、NC服务器配置MMIO HighBase
 
-​    X620 G50 已适配Z100L，但K100暂未适配；Z100L 需要刷OA上的Z17定制BIOS，主要改动在MMIO=2T。
-
-​    X640 G50已适配Z100L和K100;直接使用OA最新固件即可，不需要单独修改BIOS选项。
+```
+ X620 G50 已适配Z100L，但K100暂未适配；Z100L 需要刷OA上的Z17定制BIOS，主要改动在MMIO=2T。
+ X640 G50已适配Z100L和K100;直接使用OA最新固件即可，不需要单独修改BIOS选项。
+```
 
 4、IOMMU Enable
 
 ​    Bios中开启iommu功能
 
-​    HYGON CBS -> NBIO Common Options -> NB Configuration -> IOMMU -> Enabled
+```
+ HYGON CBS -> NBIO Common Options -> NB Configuration -> IOMMU -> Enabled
+```
 
 ​    系统中配置iommu=pt或者passthrough
 
-​    编辑/etc/default/grub文件，添加amd_iommu=on iommu=pt 到linux启动命令行
-
-​    grub2-mkconfig -o /boot/efi/EFI/centos/grub.cfg
+```
+ 编辑/etc/default/grub文件，添加amd_iommu=on iommu=pt 到linux启动命令行
+ grub2-mkconfig -o /boot/efi/EFI/centos/grub.cfg
+```
 
 ​    注：根据服务器有关手册，IOMMU默认disabled，以提高P2P性能，在基准测试中差异比较明显。
 
@@ -83,6 +87,26 @@ lspci -vv -d :55b7 | grep node
 
 操作系统及内核版本兼容性请参考解决方案中心提供的《DCU兼容性指南》。如果内核版本不符合要求，验证阶段可以尝试直接安装驱动，如果出现异常及时反馈。
 
+| **操作系统**  | **版本**        | **内核**                                   |
+| ------------- | --------------- | ------------------------------------------ |
+| **Centos**    | **7.6**         | **3.10.0-957.el7.x86_64**                  |
+| **Centos**    | **8.5**         | **4.18.0-348.el8.x86_64**                  |
+| **Rocky**     | **8.6**         | **4.18.0-348.el8.x86_64**                  |
+| **Rocky**     | **9.2**         | **4.18.0-348.el8.x86_64**                  |
+| **Ubuntu**    | **20.04.1**     | **5.4.0-42-generic**                       |
+| **Ubuntu**    | **22.04**       | **5.15.0-25-generic**                      |
+| **NFS**       | **3.2**         | **3.10.0-957.nfs.5.x86_64**                |
+| **NFS**       | **4**           | **4.19.113-14.1.nfs4.x86_64**              |
+| **NFS**       | **4.0-Desktop** | **5.4.0-49-generic**                       |
+| **UOS**       | **1021e**       | **4.19.90-2109.1.0.0108.up2.uel20.x86_64** |
+| **Kylin**     | **v10 SP2**     | **4.19.90-24.4.v2101.ky10.x86_64**         |
+| **Anolis**    | **8.4**         | **4.19.91-23.4.an8.x86_64**                |
+| **Anolis**    | **8.6**         | **4.19.91-26.an8.x86_64**                  |
+| **openEuler** | **22.03**       | **5.10.0-60.18.0.50.oe2203.x86_64**        |
+| **BCLinux**   | **8.2**         | **4.19.0-240.23.11.el8_2.bclinux.x86_64**  |
+
+使用`iso`镜像安装操作系统时，请勿允许任何操作系统的更新行为, 否则会带来内核版本的升级，导致安装失败;
+
 ### 3.2      内核相关
 
 驱动安装时和内核版本绑定，如果内核升级会导致驱动失效，需要重新安装。
@@ -91,21 +115,23 @@ lspci -vv -d :55b7 | grep node
 
 内核升级后，会直接导致驱动无法加载，甚至无法进入os，可以根据实际情况如下处理
 
+```
 1）能正常进入系统，重新安装驱动并重启系统即可。
-
 2）系统启动过程中卡住，在BIOS中临时禁用DCU卡，启动后卸载或重新安装驱动。
-
 3）上述方式无效，尝试插拔DCU卡恢复。
+```
+
+
 
 #### 3.2.2    Ubuntu禁用内核升级
 
 Ubuntu缺省会自动升级内核，很容易导致在系统或主动或被动重启的时候进入了新的内核，导致驱动失效，建议关闭自动升级，方法参考《Ubuntu-DCU 环境部署指南》和问题单1148和2169等。建议方法如下：
 
+```
 1）打开目录/etc/apt/apt.conf.d下的文件10periodic和20auto-upgrades
-
 2）所有值改为0
-
 3）重启
+```
 
  
 
@@ -121,15 +147,21 @@ Ubuntu缺省会自动升级内核，很容易导致在系统或主动或被动�
 
 1）修改grub参数，在/etc/default/grub中GRUB_CMDLINE_LINUX项中增加以下内容： 
 
-​    idle=nomwait processor.limit_cstate=0 
+```
+idle=nomwait processor.limit_cstate=0 
+```
 
 2）重新生成grub，配置文件路径/boot/grub2/grub.cfg 
 
-​     grub2-mkconfig -o /boot/efi/EFI/kylin/grub.cfg
+```
+grub2-mkconfig -o /boot/efi/EFI/kylin/grub.cfg
+```
 
 3）修改完成后重启 
 
-​     reboot
+```
+ reboot
+```
 
 
 
@@ -141,11 +173,11 @@ Ubuntu缺省会自动升级内核，很容易导致在系统或主动或被动�
 
 尽可能在满足兼容性列表范围内的OS（及内核）环境部署软件，如果驱动安装异常，可关注如下几点：
 
-​    1）是否安装依赖包，详细参考安装手册；
-
-​    2）安装过程是否报错，如果有错可以查看install.log了解详细原因，并根据分析结果修正相关问题，例如缺少依赖包；
-
-​    3）安装后是否有重新启动服务器
+```
+1）是否安装依赖包，详细参考安装手册；
+2）安装过程是否报错，如果有错可以查看install.log了解详细原因，并根据分析结果修正相关问题，例如缺少依赖包
+3）安装后是否有重新启动服务器
+```
 
  
 
@@ -175,29 +207,29 @@ ABI（Application Binary Interface）问题可自行检索了解，直接表现�
 
 识别异常指lspci无法看到DCU卡，或者出现降速现象，可以分析以下几种情形：
 
-​    1）检查是否插好（可重新插拔交叉验证），主板、电源线等是否满足要求。
+```
+1）检查是否插好（可重新插拔交叉验证），主板、电源线等是否满足要求。
+2）查看DCU指示灯。
+3）Riser、PCIe Switch等是否正常。
+```
 
-​    2）查看DCU指示灯。
 
-​    3）Riser、PCIe Switch等是否正常。
 
 #### 5.1.2    驱动加载异常
 
 硬件识别正常但无法加载驱动，lspci输出信息可能不正确或缺省，通过rocminfo等查看异常，可以分析以下几种情形：
 
-​    1）驱动是否正常安装并重启服务器，如果异常需进一步分析，排查报错原因。
+```
+1）驱动是否正常安装并重启服务器，如果异常需进一步分析，排查报错原因。
+2）内核版本主动/被动升级（降级），和驱动安装时不一致。
+3）驱动版本是否最新，能够支持所安装的DCU卡。
+4）如果使用docker，容器内是否映射/opt/hyhal（或者拷贝）。
+5）检查dmesg输出，确认驱动/firmware是否正常。
+6）确认vbios和驱动相匹配。
+7）重新插拔或交叉验证。
+```
 
-​    2）内核版本主动/被动升级（降级），和驱动安装时不一致。
 
-​    3）驱动版本是否最新，能够支持所安装的DCU卡。
-
-​    4）如果使用docker，容器内是否映射/opt/hyhal（或者拷贝）。
-
-​    5）检查dmesg输出，确认驱动/firmware是否正常。
-
-​    6）确认vbios和驱动相匹配。
-
-​    7）重新插拔或交叉验证。
 
 #### 5.1.3    应用无法使用DCU卡
 
@@ -207,15 +239,19 @@ ABI（Application Binary Interface）问题可自行检索了解，直接表现�
 
 ​        \#非root用户有sudo权限
 
-​       sudo usermod -aG video $USER
+```
+  sudo usermod -aG video $USER
+```
 
 ​       \#非root用户没有sudo权限，由root用户执行以下命令，其中userid替换为实际用户id
 
-​       usermod -aG video userid
+```
+   usermod -aG video userid
+```
 
 ​      \#用户退出重新登录
 
-​      2）是否正确设置环境变量，通常可以直接执行 source env.sh（其中env.sh位于dtk安装根目录下，一般 source /opt/dtk/env.sh）。
+​     2）是否正确设置环境变量，通常可以直接执行 source env.sh（其中env.sh位于dtk安装根目录下，一般 source /opt/dtk/env.sh）。
 
 ​    3）学习框架是否DCU适配版本，是否设置错误的CUDA_VISIBLE_DEVICES、HIP_VISIBLE_DEVICES等环境变量。
 
@@ -227,35 +263,35 @@ ABI（Application Binary Interface）问题可自行检索了解，直接表现�
 
 训练卡住原因可能较多，分析较复杂，可优先验证以下问题：
 
-​    1）设置环境变量NCCL_LAUNCH_MODE=GROUP，再启动训练。
+```
+1）设置环境变量NCCL_LAUNCH_MODE=GROUP，再启动训练。
+2）网络会优先使用IB，如果环境配置IB但没有使用，可能导致异常，可设置环境变量 NCCL_IB_DISABLE=1禁用IB。
+3）通信的网卡名称不一致，可以手工根据节点设置NCCL_SOCKET_IFNAME环境变量。
+4）可以设置环境变量NCCL_DEBUG=INFO以输出更多信息。
+5）学习框架输出更多debug信息，以进一步分析排查。
+```
 
-​    2）网络会优先使用IB，如果环境配置了IB但没有使用，可能导致异常，可以设置环境变量 NCCL_IB_DISABLE=1禁用IB。
 
-​    3）通信的网卡名称不一致，可以手工根据节点设置NCCL_SOCKET_IFNAME环境变量。
-
-​    4）可以设置环境变量NCCL_DEBUG=INFO以输出更多信息。
-
-​    5）学习框架输出更多debug信息，以进一步分析排查。
 
 ### 5.3      VMFault
 
 VMFault问题和CPU程序的CoreDump类似，分析难度较大，可以参考如下步骤
 
-​    1）确认是否和卡相关，例如8卡环境总是某一张出错，其他卡正常，这种情况建议通过插拔交叉验证。
+```
+1）确认是否和卡相关，例如8卡环境总是某一张出错，其他卡正常，这种情况建议通过插拔交叉验证。
+2）确认不同版本的驱动（hyhal）是否存在同样问题，可在不同环境或通过升降级驱动验证，排除驱动bug。
+3）根据相应文档自行进一步分析或者按常规流程提交产品。
+```
 
-​    2）确认不同版本的驱动（hyhal）是否存在同样问题，可在不同环境或通过升降级驱动验证，排除驱动bug。
 
-​    3）根据相应文档自行进一步分析或者按常规流程提交产品。
 
 ## 6   信息采集表格
 
 备注：如果多台配置一样，填写一份即可，如果存在差异可以备注或者不同配置填写不同表格        
 
- ![image-20240711164054590](imgs/get_information.png)
+ !(C:\Users\Admin\AppData\Roaming\Typora\typora-user-images\image-20240711164054590.png)
 
-
-
- 
+![image-20240712090915084](C:\Users\Admin\AppData\Roaming\Typora\typora-user-images\image-20240712090915084.png)
 
 
 
