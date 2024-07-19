@@ -47,13 +47,13 @@ lspci -vv -d :55b7 | grep node
 
 查询方法：a）查看主板贴纸；b）ipmitool fru查看Board Serial。
 
-![](imgs/sn.png)
+![](C:\Users\Admin\Desktop\个人文件\sn码.png)
 
 ​    (2)   电源连线部件的选择：X7840和X 7340机型，各GPU卡电源线可查询链接获取准确信息https://edoc.sugon.com/default/++intid++847659209/@zopen.views%3Aindex。
 
 ​    (3)   Riser：选择符合要求的riser，避免降速或散热等问题，详细可以参考服务器规范，例如X7340
 
-![](imgs/x7340.png)
+![](C:\Users\Admin\Desktop\个人文件\x7340.png)
 
 3、NC服务器配置MMIO HighBase
 
@@ -85,7 +85,7 @@ lspci -vv -d :55b7 | grep node
 
 ### 3.1      兼容性
 
-操作系统及内核版本兼容性请参考解决方案中心提供的《DCU兼容性指南》。如果内核版本不符合要求，验证阶段可以尝试直接安装驱动，如果出现异常及时反馈。
+操作系统及内核版本兼容性请参考解决方案中心提供的《DCU兼容性指南》。如果内核版本不符合要求，验证阶段可以尝试直接安装驱动，如果出现异常及时反馈。更多的兼容性信息可查看 https://docs.qq.com/sheet/DVHdTZHB3RVZOVENI?tab=dklqmf 
 
 | **操作系统**  | **版本**        | **内核**                                   |
 | ------------- | --------------- | ------------------------------------------ |
@@ -288,8 +288,6 @@ VMFault问题和CPU程序的CoreDump类似，分析难度较大，可以参考�
 ## 6   信息采集表格
 
 备注：如果多台配置一样，填写一份即可，如果存在差异可以备注或者不同配置填写不同表格        
-
-![](imgs/get_informations.png)
 
 
 
